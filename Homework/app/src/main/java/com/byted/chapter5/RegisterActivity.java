@@ -47,7 +47,27 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
                 // todo 做网络请求
-
+                Log.d("retrofit", "Request");
+                apiService.registerUser(name, password, repassword).enqueue(new Callback<UserResponse>() {
+                    @Override
+                    public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                        Log.d("retrofit", "Get Response, Status: " + response.code());
+                        if (response.body() != null && response.body().user != null) {
+                            Log.d("retrofit", "Register Succeeded");
+                            Toast.makeText(RegisterActivity.this, "Register Succeeded: " + response.body().user.nickname,
+                                    Toast.LENGTH_SHORT).show();
+                        } else if (response.body() != null) {
+                            Log.d("retrofit", "Register Failed");
+                            Toast.makeText(RegisterActivity.this, "Register Failed: " + response.body().errorMsg,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<UserResponse> call, Throwable t) {
+                        Toast.makeText(RegisterActivity.this, "Network Failure: " + t.getMessage(), Toast.LENGTH_SHORT).show();;
+                        Log.d("retrofit", t.getMessage());
+                    }
+                });
 
             }
         });
